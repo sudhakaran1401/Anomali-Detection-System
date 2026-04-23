@@ -1,0 +1,120 @@
+<div class="d-flex justify-content-between mt-2">
+
+    <div>
+        <label>Rows per page:</label>
+        <select id="rowsSelect" onchange="changeRowsPerPage()" class="form-select d-inline-block w-auto ms-2">
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+        </select>
+    </div>
+    <div>
+        <span id="pageInfo" class="align-self-center"></span>
+    </div>
+    
+    <div>
+        <button class="btn btn-primary btn-sm" onclick="prevPage()">Previous</button>
+        <button class="btn btn-primary btn-sm" onclick="nextPage()">Next</button>
+    </div>
+</div>
+
+<script>
+currentPage = 1;
+rowsPerPage = 5;
+
+function showPage(page) {
+    const table = document.getElementById("dataTable");
+    const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+    const totalRows = rows.length;
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+
+    currentPage = page;
+
+    for (let i = 0; i < totalRows; i++) {
+        rows[i].style.display = "none";
+    }
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    for (let i = start; i < end && i < totalRows; i++) {
+        rows[i].style.display = "";
+    }
+
+    document.getElementById("pageInfo").innerText =
+        "Page " + currentPage + " of " + totalPages;
+}
+
+function nextPage() {
+    showPage(currentPage + 1);
+}
+
+function prevPage() {
+    showPage(currentPage - 1);
+}
+
+// Run on page load
+window.onload = function () {
+    showPage(1);
+};
+</script><script>
+let currentPage = 1;
+let rowsPerPage = 5; // default
+
+function showPage(page) {
+    const table = document.getElementById("dataTable");
+    const tbody = table.getElementsByTagName("tbody")[0];
+    const rows = tbody.getElementsByTagName("tr");
+
+    const totalRows = rows.length;
+    const totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
+
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+
+    currentPage = page;
+
+    // Hide all rows
+    for (let i = 0; i < totalRows; i++) {
+        rows[i].style.display = "none";
+    }
+
+    // Show selected page rows
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    for (let i = start; i < end && i < totalRows; i++) {
+        rows[i].style.display = "";
+    }
+
+    document.getElementById("pageInfo").innerText =
+        `Page ${currentPage} of ${totalPages}`;
+
+    document.getElementById("prevBtn").disabled = currentPage === 1;
+    document.getElementById("nextBtn").disabled = currentPage === totalPages;
+}
+
+// 🔥 Change rows per page
+function changeRowsPerPage() {
+    rowsPerPage = parseInt(document.getElementById("rowsSelect").value);
+    currentPage = 1; // reset to first page
+    showPage(currentPage);
+}
+
+function nextPage() {
+    showPage(currentPage + 1);
+}
+
+function prevPage() {
+    showPage(currentPage - 1);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    showPage(1);
+});
+</script>
