@@ -106,6 +106,8 @@ python detect.py
 * Support for categorical features
 * Feature scaling and preprocessing enhancements
 * Model performance tuning
+* User Authentication
+* Model Comparisions
 
 
 ---
