@@ -10,11 +10,9 @@ The system processes input data, handles missing values, and classifies each rec
 
 ## ⚙️ Features
 
-* Detects anomalies in numerical datasets
-* Automatically handles missing values
+* Anomaly detection in numerical datasets with auto handling missing values
 * Works with small datasets (safe fallback handling)
 * Robust error handling to prevent application crashes
-* Simple, lightweight, and easy to use
 * Web interface using Django or Flask
 * Visualization dashboard for insights
 
