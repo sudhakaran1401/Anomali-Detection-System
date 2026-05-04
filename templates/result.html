@@ -1,52 +1,34 @@
+{% load static%}
+{% load custom_filters %}
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Dashboard</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/home.css' %}" rel="stylesheet">
 
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-3px);
-            transition: 0.2s ease;
-        }
-
-        .dark-mode {
-            background-color: #121212 !important;
-            color: #ffffff;
-        }
-
-        .dark-mode .card {
-            background-color: #1e1e1e;
-            color: #fff;
-        }
-    </style>
 </head>
 
 <body class="bg-light" id="body">
 
-<h3 class="text-center my-4">Analytics Dashboard</h3>
+<h3 class="text-center my-4 fw-bold">Analytics Dashboard</h3>
+<p class="text-center text-muted">
+    📄 File: <strong>{{ filename }}</strong>
+</p>
 
-<!-- ================= TOP CONTROLS ================= -->
 <div class="container mb-3 d-flex justify-content-between">
-
     <div>
         <button class="btn btn-sm btn-dark" onclick="toggleDark()">🌙 Dark Mode</button>
         <button class="btn btn-sm btn-primary" onclick="toggleChart()">📊 Toggle Chart</button>
         <button class="btn btn-sm btn-danger" onclick="showAnomalies()">🚨 Show Anomalies</button>
-        <button class="btn btn-sm btn-success" onclick="downloadCSV()">⬇ Download CSV</button>
+        <a href="{% url 'download_csv' %}" class="btn btn-sm btn-success">⬇ Download CSV</a>
     </div>
 
     <input type="text" id="searchInput" placeholder="Search..." class="form-control w-25" onkeyup="searchTable()">
-
 </div>
 
-<!-- ================= KPI ================= -->
 <div class="container">
     <div class="row g-3">
         <div class="col-md-4">
@@ -70,35 +52,35 @@
     </div>
 </div>
 
-<!-- ================= CHART ================= -->
+<!--<div class="container mt-3">
+    <div class="card p-3 shadow-sm">
+        <h6 class="fw-bold">Model Information</h6>
+        <p class="mb-1"><strong>Algorithm:</strong> Isolation Forest</p>
+        <p class="mb-0"><strong>Contamination:</strong> 5%</p>
+    </div>
+</div>-->
+
 <div class="container mt-4">
 
     {{ normal|json_script:"normal-data" }}
     {{ anomalies|json_script:"anomaly-data" }}
+    {{ scatter_data|json_script:"scatter-data" }}
 
     <div class="card p-5 shadow-sm" style="height:350px;">
-        <div class="d-flex justify-content-center gap-4 my-1">
-            <div class="d-flex align-items-center gap-2">
-                <span style="width:15px;height:15px;background:#28a745;display:inline-block;border-radius:3px;"></span>
-                <span>Normal</span>
-            </div>
-
-            <div class="d-flex align-items-center gap-2">
-                <span style="width:15px;height:15px;background:#dc3545;display:inline-block;border-radius:3px;"></span>
-                <span>Anomalies</span>
-            </div>
-
-        </div>
         <canvas id="chartCanvas"></canvas>
+    </div>
+
+    <div class="container mt-4">
+        <div class="card p-4 shadow-sm">
+            <h5 class="text-center">Scatter Plot (Anomaly Detection)</h5>
+            <canvas id="scatterChart"></canvas>
+        </div>
     </div>
 
 </div>
 
-<!-- ================= TABLE ================= -->
 <div class="container mt-4">
-
     <div class="card p-4 shadow-lg">
-
         <div class="table-responsive">
             <table id="dataTable" class="table table-bordered table-striped text-center">
 
@@ -113,17 +95,17 @@
 
                 <tbody>
                 {% for row in data %}
-                <tr class="{% if row|last == 'Anomaly' %}table-danger{% endif %}">
+                <tr class="{% if row.result == 'Anomaly' %}table-danger fw-bold{% endif %}">
                     <td>{{ forloop.counter }}</td>
 
-                    {% for item in row %}
+                    {% for col in columns %}
                     <td>
-                        {% if item == "Anomaly" %}
+                        {% if row|get_item:col == "Anomaly" %}
                             <span class="badge bg-danger">Anomaly</span>
-                        {% elif item == "Normal" %}
+                        {% elif row|get_item:col == "Normal" %}
                             <span class="badge bg-success">Normal</span>
                         {% else %}
-                            {{ item }}
+                            {{ row|get_item:col }}
                         {% endif %}
                     </td>
                     {% endfor %}
@@ -138,107 +120,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+<script src="{% static 'js/pagination.js' %}"></script>
 
-<script>
-let chartType = 'bar';
 
-const normal = JSON.parse(document.getElementById('normal-data').textContent);
-const anomalies = JSON.parse(document.getElementById('anomaly-data').textContent);
-
-let chart;
-
-function renderChart() {
-    if (chart) chart.destroy();
-
-    chart = new Chart(document.getElementById('chartCanvas'), {
-        type: chartType,
-        data: {
-            labels: ['Normal', 'Anomalies'],
-            datasets: [{
-                data: [normal, anomalies],
-                backgroundColor: ['#28a745', '#dc3545'],
-                borderRadius: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-
-            animation: {
-                duration: 1200,
-                easing: 'easeOutQuart'
-            },
-
-            plugins: {
-                legend: {
-                    display: false   // ✅ no undefined legend
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.label + ": " + context.raw;
-                        }
-                    }
-                }
-            },
-
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-}
-
-renderChart();
-
-function toggleChart() {
-    chartType = chartType === 'bar' ? 'pie' : 'bar';
-    renderChart();
-}
-
-function toggleDark() {
-    document.getElementById('body').classList.toggle('dark-mode');
-}
-
-function searchTable() {
-    let input = document.getElementById("searchInput").value.toLowerCase();
-    let rows = document.querySelectorAll("#dataTable tbody tr");
-
-    rows.forEach(row => {
-        row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
-    });
-}
-
-function showAnomalies() {
-    let rows = document.querySelectorAll("#dataTable tbody tr");
-
-    rows.forEach(row => {
-        row.style.display = row.innerText.includes("Anomaly") ? "" : "none";
-    });
-}
-
-function downloadCSV() {
-    let rows = document.querySelectorAll("table tr");
-    let csv = [];
-
-    rows.forEach(row => {
-        let cols = row.querySelectorAll("td, th");
-        let data = [];
-        cols.forEach(col => data.push(col.innerText));
-        csv.push(data.join(","));
-    });
-
-    let blob = new Blob([csv.join("\n")], { type: "text/csv" });
-    let url = window.URL.createObjectURL(blob);
-
-    let a = document.createElement("a");
-    a.href = url;
-    a.download = "data.csv";
-    a.click();
-}
-</script>
 
 </body>
 </html>

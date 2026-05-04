@@ -1,5 +1,5 @@
 """
-URL configuration for Anamoly_Detection project.
+URL configuration for Anomaly_Detection project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/6.0/topics/http/urls/
@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path('', include('Anamoly.urls')),
+    
     path("admin/", admin.site.urls),
+    path('', include('anomaly.urls')),
 ]

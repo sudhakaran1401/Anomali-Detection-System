@@ -1,0 +1,41 @@
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    transition: background 0.3s, color 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px) scale(1.01);
+    transition: 0.2s ease;
+}
+
+.dark-mode {
+    background-color: #121212 !important;
+    color: #ffffff;
+}
+
+.dark-mode .card {
+    background-color: #1e1e1e;
+    color: #fff;
+}
+
+.upload-card {
+    border-radius: 12px;
+    border: none;
+}
+
+.upload-area {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 30px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.upload-area:hover {
+    border-color: #0d6efd;
+    background-color: #f8f9fa;
+}
+
+.btn:hover {
+    transform: scale(1.05);}

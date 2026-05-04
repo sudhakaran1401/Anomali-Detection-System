@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class AnamolyConfig(AppConfig):
-    name = "Anamoly"
+    name = "anomaly"
