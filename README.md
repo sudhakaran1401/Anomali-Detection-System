@@ -1,25 +1,98 @@
-# 🔍 Anomaly Detection System (Django + Machine Learning)
+# 🔍 Anomaly Detection Analytics Dashboard (Django + Machine Learning)
 
 ## 📌 Overview
 
-This project is a web-based anomaly detection system built using Django and Machine Learning. It allows users to input data through a web interface and identifies unusual patterns (outliers) using the Isolation Forest algorithm.
+This project is a **web-based anomaly detection analytics dashboard** built using **Django and Machine Learning**. It allows users to upload datasets (CSV), analyze them in real-time, and detect unusual patterns (anomalies) using the **Isolation Forest algorithm**.
 
-The system performs data preprocessing, handles missing values, and classifies each record as **“Normal”** or **“Anomaly”** with robust error handling to ensure stability.
-
----
-
-## ⚙️ Features
-
-* Web-based interface for anomaly detection
-* Automatic handling of missing values
-* Works with small datasets (safe fallback logic)
-* Robust error handling to prevent application crashes
-* Modular architecture separating ML logic from backend
-* Real-time prediction results
+The system provides **interactive visualizations, filtering options, and downloadable reports**, making it suitable for business data analysis such as payroll monitoring.
 
 ---
 
-## 🧠 Tech Stack
+## 🚀 Key Features
+
+### 📊 Data Upload & Processing
+
+* Upload CSV datasets directly from the UI
+* Automatic preprocessing using Pandas
+* Handles missing values and small datasets safely
+
+---
+
+### 📈 Analytics Dashboard
+
+* Summary cards:
+
+  * Total Records
+  * Normal Records
+  * Anomalies Detected
+* Clean and responsive UI
+
+---
+
+### 📉 Visualization
+
+* Interactive **line chart** showing anomaly distribution
+* Toggle chart visibility
+* Separate highlighting for:
+
+  * Normal data
+  * Anomalous data
+
+---
+
+### 🔍 Data Filtering & Controls
+
+* Show only anomalies
+* Show only normal records
+* Reset filters dynamically
+
+---
+
+### 📋 Tabular Data View
+
+* Paginated data table
+* Columns include:
+
+  * Employee
+  * Department
+  * Salary details (Gross, Deduction, Net Pay)
+  * Result (Normal / Anomaly)
+  * Reason (explanation for anomaly)
+
+---
+
+### 📥 Export Features
+
+* Download processed data as:
+
+  * CSV file
+  * PDF report
+
+---
+
+### 🧠 Machine Learning
+
+* Algorithm: **Isolation Forest**
+* Contamination: 5%
+* Output:
+
+  * `-1` → Anomaly
+  * `1` → Normal
+
+---
+
+## 🏗️ Project Architecture
+
+User Upload (CSV)
+→ Django Views (`views.py`)
+→ Data Processing (Pandas)
+→ ML Model (`ml/anamoly.py`)
+→ Prediction Results
+→ Dashboard UI (Charts + Table + Summary)
+
+---
+
+## 🛠️ Tech Stack
 
 ### Backend
 
@@ -35,34 +108,8 @@ The system performs data preprocessing, handles missing values, and classifies e
 ### Frontend
 
 * HTML
-* Django Templates
-
----
-
-## 🔬 Algorithm Used
-
-**Isolation Forest**
-
-* Efficient for detecting anomalies in datasets
-* Works by isolating outliers instead of profiling normal data
-* Configuration:
-
-  * Contamination: 5%
-* Output:
-
-  * `-1` → Anomaly
-  * `1` → Normal
-
----
-
-## 🏗️ Project Architecture
-
-User Input (HTML Form)
-→ Django Views (`views.py`)
-→ ML Module (`ml/anamoly.py`)
-→ Isolation Forest Model
-→ Prediction Result
-→ Display in UI (`result.html`)
+* CSS / Bootstrap
+* Chart.js
 
 ---
 
@@ -70,60 +117,37 @@ User Input (HTML Form)
 
 ```
 Anomali-Detection-System/
- ├── Anamoly/                 # Django App
+ ├── Anamoly/
  │    ├── ml/
- │    │    └── anamoly.py     # ML logic
+ │    │    └── anamoly.py
  │    ├── views.py
  │    ├── urls.py
- │    └── ...
  │
- ├── Anamoly_Detection/       # Project Settings
+ ├── Anamoly_Detection/
  │    ├── settings.py
  │    ├── urls.py
- │    └── ...
  │
  ├── templates/
  │    ├── home.html
- │    └── result.html
+ │    ├── result.html
  │
  ├── manage.py
  ├── requirements.txt
- ├── .gitignore
 ```
 
 ---
 
-## 🚀 Installation & Setup
+## ⚙️ Installation & Setup
 
-### 1. Clone the Repository
-
-```
+```bash
 git clone https://github.com/sudhakaran1401/Anomali-Detection-System.git
 cd Anomali-Detection-System
-```
 
-### 2. Create Virtual Environment
-
-```
 python -m venv venv
 venv\Scripts\activate
-```
 
-### 3. Install Dependencies
-
-```
 pip install -r requirements.txt
-```
-
-### 4. Run Migrations
-
-```
 python manage.py migrate
-```
-
-### 5. Run the Server
-
-```
 python manage.py runserver
 ```
 
@@ -131,37 +155,46 @@ python manage.py runserver
 
 ## 📊 How It Works
 
-1. User inputs data through the web interface
-2. Backend processes data using Pandas
-3. Isolation Forest model detects anomalies
-4. Results are displayed in the UI
+1. Upload a CSV file (e.g., payroll dataset)
+2. Data is processed using Pandas
+3. Isolation Forest detects anomalies
+4. Results are:
+
+   * Displayed in dashboard
+   * Visualized using charts
+   * Explained with reasons
+5. Users can filter and download reports
 
 ---
 
-## 📈 Output
+## 📈 Sample Output
 
-* Displays prediction result:
+* **Total Records:** 32
+* **Normal:** 30
+* **Anomalies:** 2
 
-  * **Anomaly** → Unusual data point
-  * **Normal** → Regular data point
+Each anomaly includes a **reason**, such as:
+
+> "Gross, Deduction, Net Pay are slightly unusual"
 
 ---
 
 ## ⚠️ Notes
 
-* Database file (`db.sqlite3`) is not included
-* Virtual environment (`venv`) is ignored
-* Only numerical data is used for predictions
+* Supports only numerical features (current version)
+* Database file (`db.sqlite3`) not included
+* Designed for small to medium datasets
 
 ---
 
 ## 🔮 Future Improvements
 
-* Support for categorical features
-* Feature scaling and preprocessing
-* Model comparison (multiple algorithms)
+* Support categorical features
+* Model persistence (save/load trained model)
+* Multiple algorithm comparison
 * User authentication system
-* Data visualization dashboard
+* Advanced dashboards (graphs, filters)
+* Deployment (Render / AWS)
 
 ---
 
