@@ -6,4 +6,6 @@ from anomaly import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('download/', views.download_csv, name='download_csv'),
+    path('api/results/', views.get_results),
+    path('download-pdf/', views.download_pdf, name='download_pdf'),
 ]

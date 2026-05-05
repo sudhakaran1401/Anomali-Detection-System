@@ -14,19 +14,22 @@
 <body class="bg-light" id="body">
 
 <h3 class="text-center my-4 fw-bold">Analytics Dashboard</h3>
-<p class="text-center text-muted">
-    📄 File: <strong>{{ filename }}</strong>
+<p class="text-center text-muted d-flex justify-content-center align-items-center gap-2">
+    📄 File: <strong id="fileName">{{ filename }}</strong>
+    <button class="btn btn-sm btn-outline-danger" onclick="clearFile()">❌</button>
 </p>
 
 <div class="container mb-3 d-flex justify-content-between">
     <div>
         <button class="btn btn-sm btn-dark" onclick="toggleDark()">🌙 Dark Mode</button>
-        <button class="btn btn-sm btn-primary" onclick="toggleChart()">📊 Toggle Chart</button>
         <button class="btn btn-sm btn-danger" onclick="showAnomalies()">🚨 Show Anomalies</button>
-        <a href="{% url 'download_csv' %}" class="btn btn-sm btn-success">⬇ Download CSV</a>
+        <button class="btn btn-sm btn-success" onclick="showNormal()">✅ Show Normal</button>
+        <button class="btn btn-sm btn-dark" onclick="resetPage()">🔄 Reset</button>
+        <button class="btn btn-sm btn-success" onclick="downloadCSV()">⬇ Download CSV</button>
+        
+        <a id="pdfBtn" href="{% url 'download_pdf' %}" class="btn btn-warning btn-sm">📄 Download PDF</a>
     </div>
-
-    <input type="text" id="searchInput" placeholder="Search..." class="form-control w-25" onkeyup="searchTable()">
+       <input type="text" id="searchInput" placeholder="Search..." class="form-control w-25" onkeyup="searchTable()">
 </div>
 
 <div class="container">
@@ -66,14 +69,25 @@
     {{ anomalies|json_script:"anomaly-data" }}
     {{ scatter_data|json_script:"scatter-data" }}
 
-    <div class="card p-5 shadow-sm" style="height:350px;">
-        <canvas id="chartCanvas"></canvas>
-    </div>
+    <div class="card p-4 shadow-sm">
+        <div class="row align-items-center">
 
-    <div class="container mt-4">
-        <div class="card p-4 shadow-sm">
-            <h5 class="text-center">Scatter Plot (Anomaly Detection)</h5>
-            <canvas id="scatterChart"></canvas>
+            <!-- LEFT: Buttons -->
+            <div class="col-md-2 d-flex flex-column gap-2 mx-5">
+                <button class="btn btn-sm btn-primary" onclick="toggleChart()">📊 Toggle Chart</button>
+                <button class="btn btn-danger btn-sm" onclick="showAnomaliesChart()">🚨 Chart Anomalies</button>
+                <button class="btn btn-success btn-sm" onclick="showNormalChart()">✅ Chart Normal</button>
+                <button class="btn btn-secondary btn-sm" onclick="showAllChart()">🔄 Reset</button>
+            </div>
+
+            <!-- RIGHT: Chart -->
+            <div class="col-md-9 d-flex justify-content-center">
+                <!-- FIXED SIZE WRAPPER -->
+                <div style="width:100%; max-width:600px; height:400px;" class="border">
+                    <canvas id="chartCanvas" class="mt-3" style="max-height:350px;"></canvas>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -122,8 +136,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'js/dashboard.js' %}"></script>
 <script src="{% static 'js/pagination.js' %}"></script>
-
-
 
 </body>
 </html>

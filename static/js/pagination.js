@@ -4,7 +4,9 @@ let rowsPerPage = 5;
 function showPage(page) {
     const table = document.getElementById("dataTable");
     const tbody = table.getElementsByTagName("tbody")[0];
-    const rows = tbody.getElementsByTagName("tr");
+    const allRows = Array.from(tbody.getElementsByTagName("tr"));
+
+    const rows = allRows.filter(row => row.dataset.visible !== "false");
 
     const totalRows = rows.length;
     const totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
@@ -47,5 +49,12 @@ function prevPage() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    let rows = document.querySelectorAll("#dataTable tbody tr");
+
+    // ✅ Initialize all rows as visible
+    rows.forEach(row => {
+        row.dataset.visible = "true";
+    });
+
     showPage(1);
 });

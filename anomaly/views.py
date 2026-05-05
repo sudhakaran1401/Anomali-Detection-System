@@ -1,9 +1,16 @@
 import csv
-
 from django.http import HttpResponse
 import pandas as pd
 from django.shortcuts import render
+from anomaly.models import AnomalyResult
 from .ml.anomaly import detect_anomalies
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import AnomalyResult
+from .serializers import AnomalySerializer
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+
 
 def home(request):
     if request.method == "POST" and request.FILES.get("file"):
@@ -56,6 +63,13 @@ def home(request):
             anomalies = len(result_df[result_df['result'] == 'Anomaly']) if 'result' in result_df.columns else 0
             normal = total - anomalies
 
+            AnomalyResult.objects.create(
+                file_name=file.name,   # 👈 use file.name (NOT filename variable)
+                total=total,
+                normal=normal,
+                anomalies=anomalies
+            )
+
             # --------- IMPROVEMENT 3: Scatter Plot Data ----------
             numeric_cols = result_df.select_dtypes(include=['number']).columns
 
@@ -107,4 +121,40 @@ def download_csv(request):
     for row in data:
         writer.writerow([row.get(col, "") for col in columns])
 
+    return response
+
+@api_view(['GET'])
+def get_results(request):
+    data = AnomalyResult.objects.all().order_by('-created_at')
+    serializer = AnomalySerializer(data, many=True)
+    return Response(serializer.data)
+
+def download_pdf(request):
+    data = request.session.get('results', [])
+
+    filter_type = request.GET.get('filter')
+
+    # 🔥 Apply filter
+    if filter_type == "normal":
+        data = [row for row in data if row.get('result') == 'Normal']
+    elif filter_type == "anomaly":
+        data = [row for row in data if row.get('result') == 'Anomaly']
+
+    total = len(data)
+    anomalies = len([row for row in data if row.get('result') == 'Anomaly'])
+    normal = total - anomalies
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+
+    doc = SimpleDocTemplate(response)
+    styles = getSampleStyleSheet()
+
+    content = []
+    content.append(Paragraph("Anomaly Detection Report", styles['Title']))
+    content.append(Paragraph(f"Total: {total}", styles['Normal']))
+    content.append(Paragraph(f"Normal: {normal}", styles['Normal']))
+    content.append(Paragraph(f"Anomalies: {anomalies}", styles['Normal']))
+
+    doc.build(content)
     return response
